@@ -1,5 +1,122 @@
+canvas, table {
+    display: inline-block;
+    margin: auto;
+}
+
 canvas {
-    /*
-    transform: scale(1.5, 1.5);
-    */
+    margin: 0px 60px 0px 10px;
+    border: 1px solid black;
+}
+
+table {
+    padding: 0px 10px 0px 60px;
+}
+
+#graphic-section {
+    display: block;
+    width: 1000px;
+    margin: auto;
+}
+
+/* Cube Mesh: */
+table > :nth-child(3) > *,
+table > :nth-child(4) > *,
+table > tr > :nth-child(3),
+table > tr > :nth-child(4) {
+    border: 1px solid black;
+    width: 50px;
+    height: 50px;
+}
+
+#control {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 50px 0;
+}
+
+#control > * {
+    display: inline-block;
+}
+
+#solving > * {
+    margin: auto;
+}
+
+#solving {
+    width: 450px;
+}
+
+#solving > div {
+    display: flex;
+    justify-content: flex-start;
+}
+
+#solving > div > form {
+    margin: 0 100px 0 0;
+}
+
+#turns {
+    width: 225px;
+}
+
+#turns > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 5px 0 5px 0;
+}
+
+#solving > h2,
+#turns > h2,
+#orientation > h2 {
+    margin: 0px;
+    padding: 0px;
+}
+
+#solving > div > h3 {
+    margin: 10px;
+    padding: 3px;
+}
+
+#solving > div > button,
+#solving > div > form > label,
+#turns > div > button,
+#orientation > div > button {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#solving > div > form > input {
+    height: 20px;
+    width: 20px;
+}
+
+#orientation {
+    width: 200px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+#solving > * {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+#solution-box {
+    border: 1px solid black;
+    width: 400px;
+}
+
+#orientation > div {
+    width: 100px;
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+}
+
+#orientation > div > * {
+    margin: auto;
 }

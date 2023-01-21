@@ -11,13 +11,21 @@ function mouseUp() {
 function mouseMove(e) {
     if(!mouseIsDown) return;
 
-    xRot += e.movementX / 100;
-    yRot += e.movementY / 100;
+    xRot -= e.movementY / 100;
+    yRot -= e.movementX / 100;
 
     xRot %= Math.PI * 2;
     yRot %= Math.PI * 2;
 }
 
+function doubleClick(e) {
+    // reset rotation
+    xRot = 0;
+    yRot = 0;
+}
+
+
 canvas.onmousemove = function(e) { mouseMove(e) };
+canvas.ondblclick = function(e) { doubleClick(e) };
 document.onmousedown = function(e) { mouseDown() };
 document.onmouseup = function(e) { mouseUp() };

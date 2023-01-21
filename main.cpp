@@ -1,45 +1,21 @@
 #include "solver.h"
 
+/* ~ ~ ~ ~ Graphics / JS Interface ~ ~ ~ ~ */
+
 constexpr int WIDTH = 300;
 constexpr int HEIGHT = 300;
-
-// TODO find suitable place for this function
-// colorIdToRGBA: converts the given color Id (byte) to a RGBA value (int)
-int colorIdToRGBA(byte id) {
-    switch(id) {
-        case RED:    return RED_RGBA;
-        case BLUE:   return BLUE_RGBA;
-        case GREEN:  return GREEN_RGBA;
-        case WHITE:  return WHITE_RGBA;
-        case ORANGE: return ORANGE_RGBA;
-        case YELLOW: return YELLOW_RGBA;
-    }
-
-    return BLACK_RGBA; // invalid ID: return BLACK_RGBA
-}
-
-// GRAPHICS
-int buffer[WIDTH * HEIGHT];
-double xRotRad = 0, yRotRad = 0;
-POV pov(WIDTH, HEIGHT, 300, 3000);
-Cube cube(-100, -100, -100, 200);
-
-// TODO update the below
+int buffer[WIDTH * HEIGHT];         // 1d array representing 2d RGBA grid; (x, y) => buffer[y * WIDTH + x]
+double xRotRad = 0, yRotRad = 0;    // rotation of cube (in radians)
+POV pov(WIDTH, HEIGHT, 300, 3000);  // point-of-view for rendering
+Cube cube(-100, -100, -100, 200);   // geometric cube to be rendered
+PocketCube cubeState;               // state of the cube during program execution
 
 int *getImageDataBuffer() {
-    // cout << "getting image data buffer [from c++] [new]" << endl;
     return buffer;
 }
 
-void setRotation(double x, double y) {
-    xRotRad = x;
-    yRotRad = y;
-}
-
+// draw: renders the cube and writes its color data in the buffer.
 void draw() {
-    // cout << "draw function [from c++] [new]" << endl;
-    // cout << "rotation: " << xRotRad << " " << yRotRad << endl;
-
     Cube c = cube.rotate(xRotRad, yRotRad);
 
     Cube::updateCubieColors();
@@ -48,11 +24,10 @@ void draw() {
 
     for(int i = 0; i < HEIGHT; i++) {
         for(int j = 0; j < WIDTH; j++) {
-            double color = BLACK_RGBA;
-            double bestZ = numeric_limits<double>::max();
+            double color = WHITE_RGBA;
+            double bestZ = 1e10; // z-value of point closest to the viewpoint
             for(int f = 0; f < faces.size(); f++) {
-
-                collision = pov.rectRaycast(faces[f], HEIGHT - i - 1, j);
+                collision = pov.rectRaycast(faces[f], j, HEIGHT - i - 1);
 
                 if(collision == Point::notAPoint) continue;
                 if(collision.z < bestZ) {
@@ -60,64 +35,64 @@ void draw() {
                     color = collision.color;
                 }
             }
+
             buffer[i * WIDTH + j] = color;
         }
     }
 }
 
-// SOLVING state
-PocketCube cubeState;
+void setRotation(double x, double y) {
+    xRotRad = x;
+    yRotRad = y;
+}
 
+// init: called once upon page-start
+void init() {
+    cubeState = PocketCube::solved; // copy again here in case solved was initialized after cubeState
+}
 
-// TODO test method: remove this later
-PocketCube& turn1(PocketCube& c, int turnId) {
+// executeTurn: executes the given turn ID
+void executeTurn(int turnId) {
     switch(turnId) {
-        case 0:  c.turnU();  return c;
-        case 1:  c.turnL();  return c;
-        case 2:  c.turnF();  return c;
-        case 3:  c.turnR();  return c;
-        case 4:  c.turnB();  return c;
-        case 5:  c.turnD();  return c;
-        case 6:  c.turnUP(); return c;
-        case 7:  c.turnLP(); return c;
-        case 8:  c.turnFP(); return c;
-        case 9:  c.turnRP(); return c;
-        case 10: c.turnBP(); return c;
-        case 11: c.turnDP(); return c;
+        case 0:  cubeState.turnU();  return;
+        case 1:  cubeState.turnL();  return;
+        case 2:  cubeState.turnF();  return;
+        case 3:  cubeState.turnR();  return;
+        case 4:  cubeState.turnB();  return;
+        case 5:  cubeState.turnD();  return;
+        case 6:  cubeState.turnUP(); return;
+        case 7:  cubeState.turnLP(); return;
+        case 8:  cubeState.turnFP(); return;
+        case 9:  cubeState.turnRP(); return;
+        case 10: cubeState.turnBP(); return;
+        case 11: cubeState.turnDP(); return;
     }
-
-    return c; // if turnId is invalid (which shouldn't happen), return c
 }
 
-// TODO test
-const vector<string> moveNames = {"U", "L", "F", "R", "B", "D", "UP", "LP", "FP", "RP", "BP", "DP"};
+vector<byte> cubieColorBuffer;
 
-// TODO test method: remove this later
-int main() {
-
-const byte BLUE    = 0;
-const byte GREEN   = 1;
-const byte ORANGE  = 2;
-const byte RED     = 3;
-const byte WHITE   = 4;
-const byte YELLOW  = 5;
-
-    PocketCube state = {PocketCube::faceColor(BLUE, BLUE, GREEN, YELLOW),
-                        PocketCube::faceColor(WHITE, RED, BLUE, GREEN),
-                        PocketCube::faceColor(WHITE, BLUE, YELLOW, GREEN),
-                        PocketCube::faceColor(RED, WHITE, ORANGE, RED),
-                        PocketCube::faceColor(RED, ORANGE, YELLOW, YELLOW),
-                        PocketCube::faceColor(ORANGE, WHITE, ORANGE, GREEN)};
-
-    cout << state << endl;
-
-    vector<byte> moves = solve(state);
-    for(const byte& move : moves) {
-        cout << moveNames[(int) move] << endl;
-        turn1(state, move);
+byte *getCubieColors() {
+    int i = 0;
+    for(const short& face : cubeState.state) {
+        for(const byte& colorId : PocketCube::extractFaceColors(face)) {
+            cubieColorBuffer[i++] = colorId;
+        }
     }
 
-    cout << state << endl;
-
-    // TODO here-o: clean things up, fix the obvious graphical problem.
+    return cubieColorBuffer.data();
 }
+
+vector<byte> solveBuffer; // contains solution moves that can be transfered to js
+
+int solveCube() {
+    solveBuffer = solve(cubeState);
+    return solveBuffer.size();
+}
+
+byte *getSolveBuffer() {
+    return solveBuffer.data();
+}
+
+// TODO here: 
+// - clean code
+// - polish

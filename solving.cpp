@@ -2,20 +2,6 @@
 
 /* ~ ~ ~ ~ Solving ~ ~ ~ ~ */
 
-// turn IDs 
-const byte TURN_U  = 0;
-const byte TURN_L  = 1;
-const byte TURN_F  = 2;
-const byte TURN_R  = 3;
-const byte TURN_B  = 4;
-const byte TURN_D  = 5;
-const byte TURN_UP = 6;
-const byte TURN_LP = 7;
-const byte TURN_FP = 8;
-const byte TURN_RP = 9;
-const byte TURN_BP = 10;
-const byte TURN_DP = 11;
-
 // inverse: given a turn ID, the inverse turn ID is returned.
 byte inverse(const byte tid) {
     return (tid + 6) % 12;
@@ -110,16 +96,6 @@ vector<byte> solve(const PocketCube& startNode) {
     // path = the entire solved path
     vector<byte> path(unsolvedPath.rbegin(), unsolvedPath.rend()); // path = { reverse(unsolvedPath} }
     path.insert(path.end(), solvedPath.begin(), solvedPath.end()); // path += solvedPath
-
-    cout << " unsolved: " << endl;
-    for(byte& move : unsolvedPath) {
-        cout << (int) move << endl;
-    }
-    cout << " solved: " << endl;
-    for(byte& move : solvedPath) {
-        cout << (int) move << endl;
-    }
-    cout << endl;
 
     return path;
 }

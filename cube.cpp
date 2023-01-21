@@ -52,7 +52,7 @@
                );
     }
 
-    // extractColors (helper):
+    // extractFaceColors (helper):
     // given a face bitset, the colors of the cubies are returned in logical order
     // ( 0 1 )
     // ( 2 3 )
@@ -87,52 +87,55 @@
     }
 
     /* ~ ~ ~ ~ Debug ~ ~ ~ ~ */
-    ostream& operator<<(ostream& os, const PocketCube& pc) {
-        char s[1000];
-        sprintf(s,
-                      "   %c%c      \n"
-                      "   %c%c      \n"
-                      "%c%c %c%c %c%c %c%c\n"
-                      "%c%c %c%c %c%c %c%c\n"
-                      "   %c%c      \n"
-                      "   %c%c      ",
-                    colorIdToChar[(pc.state[U] >> TOP_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[U] >> TOP_RIGHT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[U] >> BOT_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[U] >> BOT_RIGHT * 4) & 0b1111],
 
-                    colorIdToChar[(pc.state[L] >> TOP_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[L] >> TOP_RIGHT * 4) & 0b1111],
-
-                    colorIdToChar[(pc.state[F] >> TOP_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[F] >> TOP_RIGHT * 4) & 0b1111],
-
-                    colorIdToChar[(pc.state[R] >> TOP_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[R] >> TOP_RIGHT * 4) & 0b1111],
-
-                    colorIdToChar[(pc.state[B] >> TOP_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[B] >> TOP_RIGHT * 4) & 0b1111],
-
-                    colorIdToChar[(pc.state[L] >> BOT_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[L] >> BOT_RIGHT * 4) & 0b1111],
-
-                    colorIdToChar[(pc.state[F] >> BOT_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[F] >> BOT_RIGHT * 4) & 0b1111],
-
-                    colorIdToChar[(pc.state[R] >> BOT_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[R] >> BOT_RIGHT * 4) & 0b1111],
-
-                    colorIdToChar[(pc.state[B] >> BOT_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[B] >> BOT_RIGHT * 4) & 0b1111],
-
-                    colorIdToChar[(pc.state[D] >> TOP_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[D] >> TOP_RIGHT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[D] >> BOT_LEFT * 4) & 0b1111],
-                    colorIdToChar[(pc.state[D] >> BOT_RIGHT * 4) & 0b1111]
-                );
-
-        return os << s;
-    }
+    /*
+     * ostream& operator<<(ostream& os, const PocketCube& pc) {
+     *     char s[1000];
+     *     sprintf(s,
+     *                   "   %c%c      \n"
+     *                   "   %c%c      \n"
+     *                   "%c%c %c%c %c%c %c%c\n"
+     *                   "%c%c %c%c %c%c %c%c\n"
+     *                   "   %c%c      \n"
+     *                   "   %c%c      ",
+     *                 colorIdToChar[(pc.state[U] >> TOP_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[U] >> TOP_RIGHT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[U] >> BOT_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[U] >> BOT_RIGHT * 4) & 0b1111],
+     *
+     *                 colorIdToChar[(pc.state[L] >> TOP_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[L] >> TOP_RIGHT * 4) & 0b1111],
+     *
+     *                 colorIdToChar[(pc.state[F] >> TOP_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[F] >> TOP_RIGHT * 4) & 0b1111],
+     *
+     *                 colorIdToChar[(pc.state[R] >> TOP_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[R] >> TOP_RIGHT * 4) & 0b1111],
+     *
+     *                 colorIdToChar[(pc.state[B] >> TOP_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[B] >> TOP_RIGHT * 4) & 0b1111],
+     *
+     *                 colorIdToChar[(pc.state[L] >> BOT_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[L] >> BOT_RIGHT * 4) & 0b1111],
+     *
+     *                 colorIdToChar[(pc.state[F] >> BOT_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[F] >> BOT_RIGHT * 4) & 0b1111],
+     *
+     *                 colorIdToChar[(pc.state[R] >> BOT_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[R] >> BOT_RIGHT * 4) & 0b1111],
+     *
+     *                 colorIdToChar[(pc.state[B] >> BOT_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[B] >> BOT_RIGHT * 4) & 0b1111],
+     *
+     *                 colorIdToChar[(pc.state[D] >> TOP_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[D] >> TOP_RIGHT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[D] >> BOT_LEFT * 4) & 0b1111],
+     *                 colorIdToChar[(pc.state[D] >> BOT_RIGHT * 4) & 0b1111]
+     *             );
+     *
+     *     return os << s;
+     * }
+     */
 
     /* ~ ~ ~ ~ Hash Function ~ ~ ~ ~ */
 
@@ -142,7 +145,7 @@
         return std::hash<uint128_t>{}(i); // return the has of that integer
     }
 
-    // ~ ~ ~ ~ Face Manipulation ~ ~ ~ ~
+    /* ~ ~ ~ ~ Face Manipulation ~ ~ ~ ~ */
     // P indicates "prime" (same face, turned opposite direction (counterclockwise, from
     //                                      perspective of looking at 3d cube, directly at that face))
 

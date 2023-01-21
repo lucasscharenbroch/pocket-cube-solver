@@ -1,7 +1,6 @@
 #ifndef SOLVER
 #define SOLVER
 
-#include <iostream> // TODO remove
 #include <vector>
 #include <queue>
 #include <unordered_map>
@@ -10,27 +9,23 @@
 
 using std::string;
 using std::vector;
-using std::numeric_limits;
 using std::unordered_map;
 using std::unordered_set;
 using std::queue;
-using std::cout;    // TODO remove
-using std::endl;    // TODO remove
-using std::ostream; // TODO remove
 
 typedef unsigned char byte;
 typedef unsigned __int128 uint128_t;
 
 /* ~ ~ ~ ~ Constants/Enumerations ~ ~ ~ ~ */
 
-// RGBA Color Values
-constexpr int RED_RGBA = 0xFF0000FF;
+// RGBA Color Values (little-endian)
+constexpr int RED_RGBA    = 0xFF0000FF;
 constexpr int YELLOW_RGBA = 0xFF00FFFF;
 constexpr int ORANGE_RGBA = 0xFF00A5FF;
-constexpr int GREEN_RGBA = 0xFF00FF00;
-constexpr int BLUE_RGBA = 0xFFFF0000;
-constexpr int BLACK_RGBA = 0xFF000000;
-constexpr int WHITE_RGBA = 0xFFFFFFFF;
+constexpr int GREEN_RGBA  = 0xFF00FF00;
+constexpr int BLUE_RGBA   = 0xFFFF0000;
+constexpr int BLACK_RGBA  = 0xFF000000;
+constexpr int WHITE_RGBA  = 0xFFFFFFFF;
 
 // Color IDs
 const byte BLUE    = 0;
@@ -42,8 +37,19 @@ const byte YELLOW  = 5;
 
 const char colorIdToChar[6] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 
+// colorIdToRGBA: converts the given color Id (byte) to a RGBA value (int)
+constexpr int colorIdToRGBA(byte id) {
+    switch(id) {
+        case RED:    return RED_RGBA;
+        case BLUE:   return BLUE_RGBA;
+        case GREEN:  return GREEN_RGBA;
+        case WHITE:  return WHITE_RGBA;
+        case ORANGE: return ORANGE_RGBA;
+        case YELLOW: return YELLOW_RGBA;
+    }
 
-int colorIdToRGBA(byte id); // converts the given color Id (byte) to a RGBA value (int)
+    return BLACK_RGBA; // invalid ID: return BLACK_RGBA
+}
 
 // Face IDs
 const byte U = 0;
@@ -53,13 +59,29 @@ const byte R = 3;
 const byte B = 4;
 const byte D = 5;
 
-// Cubie Location IDs (the funny indexing is so bitwise rotations can be used to rotate entire faces)
+// Cubie Location IDs (the funny indexing is so bitwise shifts can be used to rotate entire faces)
 //  23
 //  10
 const byte BOT_RIGHT = 0;
-const byte BOT_LEFT = 1;
-const byte TOP_LEFT = 2;
+const byte BOT_LEFT  = 1;
+const byte TOP_LEFT  = 2;
 const byte TOP_RIGHT = 3;
+
+// TURN IDs 
+const byte TURN_U  = 0;
+const byte TURN_L  = 1;
+const byte TURN_F  = 2;
+const byte TURN_R  = 3;
+const byte TURN_B  = 4;
+const byte TURN_D  = 5;
+const byte TURN_UP = 6;
+const byte TURN_LP = 7;
+const byte TURN_FP = 8;
+const byte TURN_RP = 9;
+const byte TURN_BP = 10;
+const byte TURN_DP = 11;
+
+byte inverse(const byte tid); // converts a turnID to its inverse turnID (+= 6; %= 12;)
 
 /* ~ ~ ~ ~ Geometric Structures ~ ~ ~ ~ */
 
@@ -151,6 +173,7 @@ public:
 
     static short faceColor(byte topLeft, byte topRight, byte botLeft, byte botRight); // generates a face bitmask with the given colors
     static vector<byte> extractFaceColors(short face); // given a face bitset, the corresponding Color IDs are returned
+    static const PocketCube solved; // solved state
 
     struct hash {
         size_t operator()(const PocketCube& c) const;
@@ -178,9 +201,7 @@ public:
     void turnR();
     void turnRP();
 
-    static const PocketCube solved; // solved state // TODO move this back to private
 private:
-
     // face manipulation
     void rotateC(byte face);
     void rotateCC(byte face);
@@ -192,23 +213,32 @@ private:
 
 /* ~ ~ ~ ~ Solving ~ ~ ~ ~ */
 
-vector<byte> solve(const PocketCube& startNode);
+vector<byte> solve(const PocketCube& startNode); // returns a vector of turnIDs
 
 /* ~ ~ ~ ~ Debug ~ ~ ~ ~ */
 
-ostream& operator<<(ostream& os, const PocketCube& pc);
+// ostream& operator<<(ostream& os, const PocketCube& pc);
 
 /* ~ ~ ~ ~ Runtime Variables ~ ~ ~ ~ */
 
-// SOLVING (state)
 extern PocketCube cubeState;
 
-/* ~ ~ ~ ~ Exported Functions  ~ ~ ~ ~ */
+/* ~ ~ ~ ~ Exported Functions ~ ~ ~ ~ */
 
 extern "C" {
+    /* ~ 3d Graphics ~ */
     int *getImageDataBuffer();
     void draw();
     void setRotation(double, double);
+
+    /* ~ 2d Graphics */
+    byte *getCubieColors();
+
+    /* ~ Turning ~ */
+    void init();
+    void executeTurn(int);
+    int solveCube();
+    byte *getSolveBuffer();
 }
 
 #endif // SOLVER

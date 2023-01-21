@@ -8,7 +8,7 @@
     Point::Point() { }
 
     // constructor (x, y, z) => (x, y, z)
-    Point::Point(const double x, const double y, const double z, const int color = 0) : 
+    Point::Point(const double x, const double y, const double z, const int color = BLACK_RGBA) : 
                  x(x), y(y), z(z), color(color) { }
 
     // copy constructor
@@ -133,6 +133,7 @@
     }
 // }
 
+
 // Rect: represents a 2-dimensional quadrilateral on a 3-dimensional plane (note that the angles
 // between the sides are not checked, so Rects are not necessarily rectangles, though they are used
 // as such; the plane is also unchecked with the forth point (it is constructed with the first three))
@@ -155,22 +156,32 @@
         Point planeIntersection = plane.lineIntersection(l);
         if(planeIntersection == Point::notAPoint) return Point::notAPoint;
 
+        // dot product of point and all sides
+        const double dot1 = Vector{corners[0], corners[1]}.dot(Vector{corners[0], planeIntersection});
+        const double dot2 = Vector{corners[1], corners[2]}.dot(Vector{corners[1], planeIntersection});
+        const double dot3 = Vector{corners[2], corners[3]}.dot(Vector{corners[2], planeIntersection});
+        const double dot4 = Vector{corners[3], corners[0]}.dot(Vector{corners[3], planeIntersection});
+
         // ensure that the point lies within the rect
-        
-        if(Vector{corners[0], corners[1]}.dot(Vector{corners[0], planeIntersection}) < 0) return Point::notAPoint;
+        if(dot1 < 0 || dot2 < 0 || dot3 < 0 || dot4 < 0) return Point::notAPoint;
 
-        if(Vector{corners[1], corners[2]}.dot(Vector{corners[1], planeIntersection}) < 0) return Point::notAPoint;
-
-        if(Vector{corners[2], corners[3]}.dot(Vector{corners[2], planeIntersection}) < 0) return Point::notAPoint;
-
-        if(Vector{corners[3], corners[0]}.dot(Vector{corners[3], planeIntersection}) < 0) return Point::notAPoint;
+        // color cube's edges black
+        if(fmin(fmin(dot1, dot2), fmin(dot3, dot4)) < 500.0) { // (epsilon = 500.0)
+            planeIntersection.color = BLACK_RGBA;
+            return planeIntersection;
+        }
 
         // set the color of the intersection point to the color of the nearest corner
-        planeIntersection.color = corners[0].color;
-        double minDist = corners[0].dist(planeIntersection);
+        // (or black if it is equidistant between two points)
+        double minDist = 1e10;
+
         double currentDist;
         for(const Point& corner : corners) {
-            if((currentDist = corner.dist(planeIntersection)) < minDist) {
+            currentDist = corner.dist(planeIntersection);
+
+            if(abs(currentDist - minDist) < 2.0) { // equidistant to two closest points (epsilon = 2.0): color black.
+                planeIntersection.color = BLACK_RGBA;
+            } else if(currentDist < minDist) {
                 planeIntersection.color = corner.color;
                 minDist = currentDist;
             }
@@ -285,12 +296,12 @@
     // respective cubie colors.
     vector<Rect> Cube::getFaces() const {
         return {
-                {corners[2], corners[6], corners[7], corners[3], cubieColors[0],  cubieColors[1],  cubieColors[2],  cubieColors[3]},  // Top
-                {corners[4], corners[6], corners[2], corners[0], cubieColors[4],  cubieColors[5],  cubieColors[6],  cubieColors[7]},  // Left
-                {corners[0], corners[2], corners[3], corners[1], cubieColors[8],  cubieColors[9],  cubieColors[10], cubieColors[11]}, // Front
-                {corners[1], corners[3], corners[7], corners[5], cubieColors[12], cubieColors[13], cubieColors[14], cubieColors[15]}, // Right
-                {corners[5], corners[7], corners[6], corners[4], cubieColors[16], cubieColors[17], cubieColors[18], cubieColors[19]}, // Back
-                {corners[0], corners[4], corners[5], corners[1], cubieColors[20], cubieColors[21], cubieColors[22], cubieColors[23]}  // Bottom
+                {corners[2], corners[6], corners[7], corners[3], cubieColors[2],  cubieColors[0],  cubieColors[1],  cubieColors[3]},  // Top
+                {corners[4], corners[6], corners[2], corners[0], cubieColors[6],  cubieColors[4],  cubieColors[5],  cubieColors[7]},  // Left
+                {corners[0], corners[2], corners[3], corners[1], cubieColors[10],  cubieColors[8],  cubieColors[9], cubieColors[11]}, // Front
+                {corners[1], corners[3], corners[7], corners[5], cubieColors[14], cubieColors[12], cubieColors[13], cubieColors[15]}, // Right
+                {corners[5], corners[7], corners[6], corners[4], cubieColors[18], cubieColors[16], cubieColors[17], cubieColors[19]}, // Back
+                {corners[0], corners[4], corners[5], corners[1], cubieColors[20], cubieColors[22], cubieColors[23], cubieColors[21]}  // Bottom
         };
     }
 // }
