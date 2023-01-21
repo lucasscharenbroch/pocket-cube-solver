@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Pocket Cube Solver</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1 class="text-center">Pocket Cube Solver</h1>
+        <section id="graphic-section">
+            <canvas id="canvas"></canvas>
+            <table id="cube-mesh"></table>
+        </section>
+
+        <section id="control">
+            <section id="solving">
+                <h2>Solution:</h2>
+                <div>
+                    <h3 id="solution-box"> (Check "Solve" To Find Solution) </h3>
+                </div>
+                <div>
+                    <form>
+                        <label for="solve-checkbox">Solve</label>
+                        <input id ="solve-checkbox" type="checkbox" onclick="updateSolution()"></input>
+                    </form>
+                    <button id="scramble-button" onclick="scrambleCube()">Scramble</button>
+                </div>
+            </section>
+
+            <section id="turns">
+                <h2 class="text-center">Turns:</h2>
+                <div>
+                    <button onclick="turn(TURN_U)">U</button>
+                    <button onclick="turn(TURN_L)">L</button>
+                    <button onclick="turn(TURN_F)">F</button>
+                    <button onclick="turn(TURN_R)">R</button>
+                    <button onclick="turn(TURN_B)">B</button>
+                    <button onclick="turn(TURN_D)">D</button>
+                </div>
+                <div>
+                    <button onclick="turn(TURN_UP)">U'</button>
+                    <button onclick="turn(TURN_LP)">L'</button>
+                    <button onclick="turn(TURN_FP)">F'</button>
+                    <button onclick="turn(TURN_RP)">R'</button>
+                    <button onclick="turn(TURN_BP)">B'</button>
+                    <button onclick="turn(TURN_DP)">D'</button>
+                </div>
+            </section>
+
+            <section id="orientation">
+                <h2 class="text-center">Cube Orientation:</h2>
+                <div>
+                    <button onclick="orient(ORIENT_UP)">^</button>
+                </div>
+                <div>
+                    <button onclick="orient(ORIENT_LEFT)">&lt;</button>
+                    <button onclick="orient(ORIENT_RIGHT)">&gt;</button>
+                </div>
+                <div>
+                    <button onclick="orient(ORIENT_DOWN)">v</button>
+                </div>
+
+            </section>
+        </section>
+    </body>
+
+    <script src="wasm.js"></script> <!-- WASM script -->
+    <script src="mouse.js"></script>
+    <script src="script.js"></script>
+</html>
