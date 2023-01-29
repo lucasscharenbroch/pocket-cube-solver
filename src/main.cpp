@@ -92,7 +92,3 @@ int solveCube() {
 byte *getSolveBuffer() {
     return solveBuffer.data();
 }
-
-// TODO here: 
-// - clean code
-// - polish
