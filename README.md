@@ -1,7 +1,7 @@
 # PocketCubeSolver
 A [2x2x2 Rubik's Cube](https://en.wikipedia.org/wiki/Pocket_Cube) solver and visualizer in WASM (C++)
 
-Try it here: https://lucasscharenbroch.github.io/PocketCubeSolver/
+Try it here: https://lucasscharenbroch.github.io/pocket-cube-solver/
 
 <image src="Screenshot.png">
   
